@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/gray_background"
+        app:cardCornerRadius="6dp"
+        app:cardElevation="5dp"
+        app:cardUseCompatPadding="true"
+        android:gravity="center">
+
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+    >
+
+        <TextView
+                android:id="@+id/article_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TitleNews"
+                tools:text="Boarding plane to U.S., Netanyahu says relationship with Trump an asset"
+        />
+
+        <TextView
+                android:id="@+id/article_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/DescriptionNews"
+                tools:text="Netanyahu is scheduled to meet Trump twice on his four day visit, a working meeting on Monday and a dinner on Tuesday."
+        />
+
+        <ImageView
+                android:id="@+id/article_thumbnail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+        />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+        >
+
+            <TextView
+                    android:id="@+id/article_author"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    style="@style/LinkNews"
+                    android:layout_weight="1"
+                    tools:text="source url"/>
+
+            <TextView
+                    android:id="@+id/article_published_day"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    style="@style/LinkNews"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    tools:text="source url"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
