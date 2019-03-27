@@ -30,6 +30,7 @@
                 android:id="@+id/article_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 style="@style/DescriptionNews"
                 tools:text="Netanyahu is scheduled to meet Trump twice on his four day visit, a working meeting on Monday and a dinner on Tuesday."
         />

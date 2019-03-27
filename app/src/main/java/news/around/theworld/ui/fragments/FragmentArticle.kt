@@ -1,18 +1,21 @@
 package news.around.theworld.ui.fragments
 
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_articles.*
 import news.around.theworld.R
 import news.around.theworld.RecyclerViewScrollListener
 import news.around.theworld.ui.adapters.ArticlesRecyclerViewAdapter
 import news.around.theworld.ui.viewmodel.ArticleViewModel
+import news.around.theworld.ui.viewmodel.viewstate.ArticleViewState
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class FragmentArticle : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -32,6 +35,8 @@ class FragmentArticle : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         refresh_layout.setOnRefreshListener(this)
         refresh_layout
     }
+
+    private val floatingButton: FloatingActionButton by lazy {go_articles_up}
 
     private var adapterArticles: ArticlesRecyclerViewAdapter = ArticlesRecyclerViewAdapter()
 
@@ -58,50 +63,76 @@ class FragmentArticle : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         super.onViewCreated(view, savedInstanceState)
         articlesRecyclerView.adapter = adapterArticles
         setScrollListener()
-        //observerLoadArticles()
-        //observerLoadMoreArticle()
+        getArticles(1)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        observingArticleViewStateChanging()
     }
 
     private fun getBundle(): String? {
         return arguments?.getString(BUNDLE)
     }
 
-//    private fun observerLoadArticles() {
-//        getBundle()?.let {
-//            articleViewModel.onArticleResult(it).observe(this, Observer { result ->
-//                result?.let {
-//                    Log.d("mytag","aaa "+it.isLoading)
-//                    adapterArticles.update(it)
-//                    swipeToRefresh.isRefreshing = false
-//                }
-//            })
-//        }
-//    }
-//
-//    private fun observerLoadMoreArticle() {
-//        articleViewModel.loadMoreArticlesResult().observe(this, Observer { result ->
-//            result?.let {
-//                Log.d("mytag", "isLoading " + it.isLoading)
-//                swipeToRefresh.isRefreshing = it.isLoading
-//                adapterArticles.update(it.data)
-//            }
-//        })
-//    }
+    private fun observingArticleViewStateChanging(){
+        addDisposable(articleViewModel.articleViewState()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                viewState -> updateScreen(viewState)
+            },{
+
+            })
+        )
+    }
+
+    private fun getArticles(page: Int = 1, isLoadingMore: Boolean = false){
+        getBundle()?.let {
+            articleViewModel.getArticles(it,page, isLoadingMore)
+        }
+    }
 
     private fun setScrollListener() {
-        scrollListener = object : RecyclerViewScrollListener(layoutManager) {
-            override fun onLoadMore(page: Int) {
-                Log.d("mytag", "page " + page)
-                getBundle()?.let {
-                    articleViewModel.loadMoreArticle(it, page)
-                }
-            }
-        }
+        scrollListener = RecyclerViewScrollListener(layoutManager
+            , this::onLoadMore, this::onChangeFloatingButtonVisibility)
+        scrollListener.thresholdShowFloatingButton = 3
         articlesRecyclerView.addOnScrollListener(scrollListener)
     }
 
+    private fun onLoadMore(page: Int){
+        getArticles(page = page, isLoadingMore = true)
+    }
+
+    private fun onChangeFloatingButtonVisibility(shouldShow: Boolean){
+        if(shouldShow){
+            floatingButton.show()
+            floatingButton.setOnClickListener {
+                articlesRecyclerView.smoothScrollToPosition(0) }
+        }else{
+            floatingButton.hide()
+        }
+    }
+
+    private fun updateScreen(viewState: ArticleViewState){
+        when(viewState){
+            is ArticleViewState.Loading -> swipeToRefresh.isRefreshing = true
+            is ArticleViewState.Success ->{
+                swipeToRefresh.isRefreshing = false
+                adapterArticles.initContent(viewState.data)
+            }
+            is ArticleViewState.LoadingMore ->{
+                swipeToRefresh.isRefreshing = false
+                adapterArticles.update(viewState.data)
+            }
+            is ArticleViewState.Error -> {
+                swipeToRefresh.isRefreshing = false
+                Toast.makeText(context, viewState.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     override fun onRefresh() {
-       // observerLoadArticles()
+        getArticles(isLoadingMore = false)
     }
 
     override fun getName(): String = this.javaClass.simpleName

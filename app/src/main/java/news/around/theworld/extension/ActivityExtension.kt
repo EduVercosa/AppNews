@@ -8,7 +8,7 @@ import news.around.theworld.ui.fragments.BaseFragment
 fun AppCompatActivity.startFragment(fragment: BaseFragment
                                     , container: Int? = R.id.container_fragment) {
     supportFragmentManager.beginTransaction()
-        .replace(container!!, fragment, fragment.getName())
+        .add(container!!, fragment, fragment.getName())
         .addToBackStack(fragment.getName())
         .commit()
 }

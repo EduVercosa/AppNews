@@ -1,7 +1,6 @@
 package news.around.theworld.ui.adapters
 
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,6 @@ import news.around.theworld.R
 import news.around.theworld.extension.loadImageFromUrl
 import news.around.theworld.model.Article
 import news.around.theworld.model.ArticleList
-
 
 class ArticlesRecyclerViewAdapter()
     : RecyclerView.Adapter<ArticlesRecyclerViewAdapter.NewsViewHolder>() {
@@ -26,9 +24,14 @@ class ArticlesRecyclerViewAdapter()
         return NewsViewHolder(view)
     }
 
+    fun initContent(newList: ArticleList){
+        this.list.clear()
+        this.list.addAll(newList.articleList)
+        notifyDataSetChanged()
+    }
+
     fun update(newList: ArticleList){
         this.list.addAll(newList.articleList)
-        Log.d("mytag","list size "+list.size)
         notifyDataSetChanged()
     }
 

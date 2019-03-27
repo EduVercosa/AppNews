@@ -2,6 +2,7 @@ package news.around.theworld.ui.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -13,20 +14,30 @@ import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_sources.*
 import news.around.theworld.R
+import news.around.theworld.RecyclerViewScrollListener
 import news.around.theworld.model.Source
 import news.around.theworld.ui.adapters.SourcesRecyclerViewAdapter
 import news.around.theworld.ui.interfaces.SwitchFragment
 import news.around.theworld.ui.viewmodel.SourceViewModel
 import news.around.theworld.ui.viewmodel.viewstate.SourceViewState
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class FragmentSource: BaseFragment(), SwipeRefreshLayout.OnRefreshListener{
 
-    private val sourceViewModel: SourceViewModel by viewModel()
+    private val sourceViewModel: SourceViewModel by sharedViewModel()
+
+    private val layoutManager: LinearLayoutManager by lazy {
+        LinearLayoutManager(context)
+    }
 
     private val sourcesRecyclerView: RecyclerView by lazy {
-        news_recycler_view.layoutManager = LinearLayoutManager(context)
+        news_recycler_view.layoutManager = layoutManager
         news_recycler_view
+    }
+
+    private val scrollListener: RecyclerViewScrollListener by lazy {
+        RecyclerViewScrollListener(layoutManager
+            , floatingButtonVisibility = this::onChangeFloatingButtonVisibility)
     }
 
     private val swipeRefreshLayout: SwipeRefreshLayout by lazy {
@@ -36,6 +47,8 @@ class FragmentSource: BaseFragment(), SwipeRefreshLayout.OnRefreshListener{
     private lateinit var adapterSources: SourcesRecyclerViewAdapter
 
     private var switchFragment: SwitchFragment? = null
+
+    private val floatingButton: FloatingActionButton by lazy {go_sources_up}
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -54,10 +67,14 @@ class FragmentSource: BaseFragment(), SwipeRefreshLayout.OnRefreshListener{
         super.onViewCreated(view, savedInstanceState)
         swipeRefreshLayout.setOnRefreshListener(this)
         sourceViewModel.getSources()
-        observerViewStateChange()
     }
 
-    private fun observerViewStateChange(){
+    override fun onResume() {
+        super.onResume()
+        observingSourceViewStateChanging()
+    }
+
+    private fun observingSourceViewStateChanging(){
         addDisposable(sourceViewModel.sourceViewState()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -69,16 +86,29 @@ class FragmentSource: BaseFragment(), SwipeRefreshLayout.OnRefreshListener{
     private fun updateScreen(viewState: SourceViewState){
         when(viewState){
             is SourceViewState.Loading -> swipeRefreshLayout.isRefreshing = true
+
             is SourceViewState.Success ->{
                 swipeRefreshLayout.isRefreshing = false
-                adapterSources = SourcesRecyclerViewAdapter(viewState.data,
+                adapterSources = SourcesRecyclerViewAdapter(viewState.list,
                     this::seeArticlesAboutSelectedSource)
+                scrollListener.thresholdShowFloatingButton = 7
+                sourcesRecyclerView.addOnScrollListener(scrollListener)
                sourcesRecyclerView.adapter = adapterSources
             }
             is SourceViewState.Error -> {
                 swipeRefreshLayout.isRefreshing = false
                 Toast.makeText(context, viewState.message, Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun onChangeFloatingButtonVisibility(shouldShow: Boolean){
+        if(shouldShow){
+            floatingButton.show()
+            floatingButton.setOnClickListener {
+                sourcesRecyclerView.smoothScrollToPosition(0) }
+        }else{
+            floatingButton.hide()
         }
     }
 

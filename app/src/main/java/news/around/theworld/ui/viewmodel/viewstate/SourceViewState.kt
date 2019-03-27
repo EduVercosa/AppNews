@@ -5,6 +5,7 @@ import news.around.theworld.model.SourceList
 
 sealed class SourceViewState{
     object Loading: SourceViewState()
-    class Success(val data: SourceList): SourceViewState()
+    class Success(val list: SourceList): SourceViewState()
+    class MemoryCache(val cache: SourceList): SourceViewState()
     class Error(val message: String): SourceViewState()
 }

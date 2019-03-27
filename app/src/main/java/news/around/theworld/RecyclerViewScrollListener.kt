@@ -3,14 +3,18 @@ package news.around.theworld
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 
-
-abstract class RecyclerViewScrollListener (layoutManager: LinearLayoutManager) : RecyclerView.OnScrollListener(){
+class RecyclerViewScrollListener (
+      layoutManager: LinearLayoutManager
+    , private val loadMore: (page: Int) -> Unit = {}
+    , private val floatingButtonVisibility: (shouldShow: Boolean) -> Unit)
+    : RecyclerView.OnScrollListener(){
 
     private var visibleThreshold = 5
     private var currentPage = 1
     private var previousTotalItemCount = 0
     private var loading = true
     private val startingPageIndex = 0
+    var thresholdShowFloatingButton: Int = 10
 
     private var mLayoutManager: RecyclerView.LayoutManager = layoutManager
 
@@ -21,6 +25,12 @@ abstract class RecyclerViewScrollListener (layoutManager: LinearLayoutManager) :
         when (mLayoutManager) {
             is LinearLayoutManager -> lastVisibleItemPosition =
                 (mLayoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+        }
+
+        if(lastVisibleItemPosition > thresholdShowFloatingButton){
+            floatingButtonVisibility.invoke(true)
+        }else{
+            floatingButtonVisibility.invoke(false)
         }
 
         if (totalItemCount < previousTotalItemCount) {
@@ -38,11 +48,9 @@ abstract class RecyclerViewScrollListener (layoutManager: LinearLayoutManager) :
 
         if (!loading && lastVisibleItemPosition + visibleThreshold > totalItemCount) {
             currentPage++
-            onLoadMore(currentPage)
+            loadMore.invoke(currentPage)
             loading = true
         }
     }
-
-    abstract fun onLoadMore(page: Int)
 
 }

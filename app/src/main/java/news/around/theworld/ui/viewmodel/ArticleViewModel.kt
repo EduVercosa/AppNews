@@ -1,6 +1,5 @@
 package news.around.theworld.ui.viewmodel
 
-import android.arch.lifecycle.MutableLiveData
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -11,47 +10,35 @@ import news.around.theworld.ui.viewmodel.viewstate.ArticleViewState
 
 class ArticleViewModel(private var repository: NewsRepository) : BaseViewModel() {
 
-    private val listArticles = MutableLiveData<ArticleList>()
-
-    private val listMoreArticles = MutableLiveData<ArticleList>()
-
-    private val articleViewState = MutableLiveData<ArticleViewState>()
-
     private val articleViewRelay = BehaviorSubject.create<ArticleViewState>()
+
+    private var nextPage: Int = 1
 
     fun articleViewState(): Observable<ArticleViewState> = articleViewRelay.hide()
 
-    private fun getArticles(sourceId: String, page: Int) {
-        addDisposable(repository
-            .getArticles(sourceId, page)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { listArticles.value  }
-            .subscribe(
-                { result -> listArticles.value = result },
-                { this::onSearchResultError })
+    fun getArticles(sourceId: String, page: Int = 1, isLoadingMore: Boolean = false) {
+        this.nextPage = page
+        articleViewRelay.onNext(ArticleViewState.Loading)
+        addDisposable(
+            repository
+                .getArticles(sourceId, nextPage)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result -> onArticlesLoadedSuccessfully(result, isLoadingMore) },
+                    { error -> onLoadArticlesError(error) })
         )
     }
 
-    private fun getMoreArticles(sourceId: String, page: Int) {
-        addDisposable(repository
-            .getArticles(sourceId, page)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { this::onArticlesSuccess },
-                { this::onSearchResultError })
-        )
+    private fun onArticlesLoadedSuccessfully(articleList: ArticleList, isLoadingMore: Boolean = false) {
+        if (isLoadingMore) {
+            articleViewRelay.onNext(ArticleViewState.LoadingMore(articleList))
+        } else {
+            articleViewRelay.onNext(ArticleViewState.Success(articleList))
+        }
     }
 
-    private fun onArticlesSuccess(articleList: ArticleList){
-        articleViewRelay.onNext(ArticleViewState.Success(articleList))
-    }
-
-    fun loadMoreArticle(sourceId: String, page: Int){
-        getMoreArticles(sourceId, page)
-    }
-
-    fun onSearchResultError(throwable: Throwable) {
+    private fun onLoadArticlesError(throwable: Throwable) {
+        articleViewRelay.onNext(ArticleViewState.Error("Ops! our servers aren't available!"))
     }
 }
