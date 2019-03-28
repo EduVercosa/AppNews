@@ -1,14 +1,16 @@
 package news.around.theworld.ui.viewmodel
 
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
+import news.around.theworld.executors.SchedulerExecutors
 import news.around.theworld.model.ArticleList
 import news.around.theworld.repository.NewsRepository
 import news.around.theworld.ui.viewmodel.viewstate.ArticleViewState
 
-class ArticleViewModel(private var repository: NewsRepository) : BaseViewModel() {
+class ArticleViewModel(
+     private var repository: NewsRepository
+    ,private var schedulers: SchedulerExecutors
+): BaseViewModel() {
 
     private val articleViewRelay = BehaviorSubject.create<ArticleViewState>()
 
@@ -22,8 +24,8 @@ class ArticleViewModel(private var repository: NewsRepository) : BaseViewModel()
         addDisposable(
             repository
                 .getArticles(sourceId, nextPage)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulers.background())
+                .observeOn(schedulers.mainThread())
                 .subscribe(
                     { result -> onArticlesLoadedSuccessfully(result, isLoadingMore) },
                     { error -> onLoadArticlesError(error) })

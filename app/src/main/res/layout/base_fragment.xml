@@ -12,16 +12,16 @@
             android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-            android:id="@+id/article_recycler_view"
+            android:id="@+id/news_recycler_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:listitem="@layout/item_articles"
+            tools:listitem="@layout/item_sources"
     />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.FloatingActionButton
-            android:id="@+id/go_articles_up"
+            android:id="@+id/floating_button_go_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -31,7 +31,8 @@
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             app:behavior_autoHide="false"
-            android:src="@android:drawable/arrow_up_float"
+            android:tint="#fff"
+            android:src="@drawable/arrow_up"
     />
 
 </RelativeLayout>
