@@ -10,7 +10,7 @@ import news.around.theworld.ui.viewmodel.viewstate.SourceViewState
 class SourceViewModel(
      private var repository: NewsRepository
     ,private var schedulers: SchedulerExecutors
-) : BaseViewModel() {
+): BaseViewModel() {
 
     private lateinit var memoryCache: SourceViewState.MemoryCache
 
@@ -36,7 +36,7 @@ class SourceViewModel(
         }
     }
 
-    fun onSourcesSuccess(sourceList: SourceList) {
+    private fun onSourcesSuccess(sourceList: SourceList) {
         memoryCache = SourceViewState.MemoryCache(sourceList)
         sourceViewRelay.onNext(SourceViewState.Success(sourceList))
     }
@@ -51,6 +51,6 @@ class SourceViewModel(
     }
 
     private fun onSourceError(throwable: Throwable) {
-        sourceViewRelay.onNext(SourceViewState.Error("Ops! our servers aren't available!"))
+        sourceViewRelay.onNext(SourceViewState.Error("Ops! something went wrong"))
     }
 }

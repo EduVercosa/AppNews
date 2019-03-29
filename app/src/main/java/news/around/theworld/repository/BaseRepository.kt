@@ -13,11 +13,9 @@ import kotlin.reflect.KClass
 class BaseRepository {
 
     companion object {
-        private val DATE_FORMAT: String = "yyyy-MM-dd'T'HH:mm:ss"
 
         fun <T : Any> get(type: KClass<T>, baseUrl: String = BuildConfig.URL_API): T {
             val gson = GsonBuilder()
-                .setDateFormat(DATE_FORMAT)
                 .setPrettyPrinting()
                 .create()
 

@@ -5,7 +5,6 @@ import news.around.theworld.mock.getArticlesJsonResponseMock
 import org.hamcrest.Matchers
 import org.junit.Assert
 import org.junit.Test
-import org.mockito.Mockito
 
 class NewsRepositoryTest : BaseTest() {
 
@@ -34,7 +33,7 @@ class NewsRepositoryTest : BaseTest() {
         val repository = NewsRepository(api)
 
         val result = repository
-            .getArticles(Mockito.anyString(), Mockito.anyInt())
+            .getArticles("", 1)
             .test()
             .assertSubscribed()
             .assertNoErrors()

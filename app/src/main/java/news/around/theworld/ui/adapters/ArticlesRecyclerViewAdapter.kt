@@ -12,7 +12,7 @@ import news.around.theworld.extension.loadImageFromUrl
 import news.around.theworld.model.Article
 import news.around.theworld.model.ArticleList
 
-class ArticlesRecyclerViewAdapter()
+class ArticlesRecyclerViewAdapter
     : RecyclerView.Adapter<ArticlesRecyclerViewAdapter.NewsViewHolder>() {
 
     private val list: MutableList<Article> = mutableListOf()

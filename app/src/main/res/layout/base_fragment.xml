@@ -1,38 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp" android:layout_height="match_parent"
         android:background="@color/gray_background">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/refresh_layout"
+    <RelativeLayout
+
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-            android:id="@+id/news_recycler_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/item_sources"
-    />
+        <android.support.v7.widget.RecyclerView
+                android:id="@+id/news_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/item_articles"
+        />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+        <android.support.design.widget.FloatingActionButton
+                android:id="@+id/floating_button_go_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                app:backgroundTint="@color/green_background"
+                app:fabSize="mini"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                app:behavior_autoHide="false"
+                android:tint="#fff"
+                android:src="@drawable/arrow_up"
+        />
 
-    <android.support.design.widget.FloatingActionButton
-            android:id="@+id/floating_button_go_up"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            app:backgroundTint="@color/green_background"
-            app:fabSize="mini"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            app:behavior_autoHide="false"
-            android:tint="#fff"
-            android:src="@drawable/arrow_up"
-    />
+        <include
+                android:id="@+id/empty_state"
+                layout="@layout/empty_state"
+                android:visibility="gone"
+        />
 
-</RelativeLayout>
+    </RelativeLayout>
+
+</android.support.v4.widget.SwipeRefreshLayout>

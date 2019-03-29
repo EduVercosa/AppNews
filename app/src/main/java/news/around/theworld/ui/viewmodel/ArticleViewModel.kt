@@ -1,5 +1,6 @@
 package news.around.theworld.ui.viewmodel
 
+import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import news.around.theworld.executors.SchedulerExecutors
@@ -19,6 +20,7 @@ class ArticleViewModel(
     fun articleViewState(): Observable<ArticleViewState> = articleViewRelay.hide()
 
     fun getArticles(sourceId: String, page: Int = 1, isLoadingMore: Boolean = false) {
+        Log.d("mytag","c "+articleViewRelay.count())
         this.nextPage = page
         articleViewRelay.onNext(ArticleViewState.Loading)
         addDisposable(
@@ -32,7 +34,7 @@ class ArticleViewModel(
         )
     }
 
-    private fun onArticlesLoadedSuccessfully(articleList: ArticleList, isLoadingMore: Boolean = false) {
+    private fun onArticlesLoadedSuccessfully(articleList: ArticleList, isLoadingMore: Boolean) {
         if (isLoadingMore) {
             articleViewRelay.onNext(ArticleViewState.LoadingMore(articleList))
         } else {
@@ -41,6 +43,6 @@ class ArticleViewModel(
     }
 
     private fun onLoadArticlesError(throwable: Throwable) {
-        articleViewRelay.onNext(ArticleViewState.Error("Ops! our servers aren't available!"))
+        articleViewRelay.onNext(ArticleViewState.Error("Ops! something went wrong"))
     }
 }

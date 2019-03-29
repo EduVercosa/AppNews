@@ -9,11 +9,11 @@ import news.around.theworld.RecyclerViewScrollListener
 import news.around.theworld.ui.adapters.ArticlesRecyclerViewAdapter
 import news.around.theworld.ui.viewmodel.ArticleViewModel
 import news.around.theworld.ui.viewmodel.viewstate.ArticleViewState
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class FragmentArticle : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
-    private val articleViewModel: ArticleViewModel by sharedViewModel()
+    private val articleViewModel: ArticleViewModel by viewModel()
 
     private var adapterArticles: ArticlesRecyclerViewAdapter = ArticlesRecyclerViewAdapter()
 
@@ -35,6 +35,7 @@ class FragmentArticle : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         newsRecyclerView.adapter = adapterArticles
+        swipeToRefresh.setOnRefreshListener(this)
         setScrollListener()
         getArticles(1)
     }
@@ -77,6 +78,7 @@ class FragmentArticle : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun updateScreen(viewState: ArticleViewState){
+        hideEmptyState()
         when(viewState){
             is ArticleViewState.Loading -> swipeToRefresh.isRefreshing = true
             is ArticleViewState.Success ->{
@@ -90,6 +92,7 @@ class FragmentArticle : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
             is ArticleViewState.Error -> {
                 swipeToRefresh.isRefreshing = false
                 Toast.makeText(context, viewState.message, Toast.LENGTH_SHORT).show()
+                showEmptyState()
             }
         }
     }

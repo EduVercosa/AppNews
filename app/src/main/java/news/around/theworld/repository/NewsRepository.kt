@@ -1,6 +1,5 @@
 package news.around.theworld.repository
 
-import android.util.Log
 import io.reactivex.Single
 import news.around.theworld.model.ArticleList
 import news.around.theworld.model.SourceList

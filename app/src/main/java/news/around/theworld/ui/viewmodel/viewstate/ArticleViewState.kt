@@ -8,4 +8,5 @@ sealed class ArticleViewState{
     class Success(val data: ArticleList): ArticleViewState()
     class LoadingMore(val data: ArticleList): ArticleViewState()
     class Error(val message: String): ArticleViewState()
+    class ClearBehaviorSubject(): ArticleViewState()
 }

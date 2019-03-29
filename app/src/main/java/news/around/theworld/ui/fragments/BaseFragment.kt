@@ -22,20 +22,18 @@ abstract class BaseFragment: Fragment(){
         compositeDisposable.add(disposable)
     }
 
-    protected val layoutManager: LinearLayoutManager by lazy {
-        LinearLayoutManager(context)
-    }
+    protected val layoutManager: LinearLayoutManager by lazy { LinearLayoutManager(context) }
 
     protected val newsRecyclerView: RecyclerView by lazy {
         news_recycler_view.layoutManager = layoutManager
         news_recycler_view
     }
 
-    protected val swipeToRefresh: SwipeRefreshLayout by lazy {
-        refresh_layout
-    }
+    protected val swipeToRefresh: SwipeRefreshLayout by lazy { refresh_layout }
 
-    private val floatingButton: FloatingActionButton by lazy {floating_button_go_up}
+    private val floatingButton: FloatingActionButton by lazy { floating_button_go_up }
+
+    private val emptyState: View by lazy { empty_state }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.base_fragment, container, false)
@@ -43,6 +41,10 @@ abstract class BaseFragment: Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        swipeToRefresh.setColorSchemeResources(
+            R.color.green_background,
+            R.color.colorPrimary,
+            R.color.colorPrimaryDark);
         floatingButton.hide()
     }
 
@@ -54,6 +56,14 @@ abstract class BaseFragment: Fragment(){
         }else{
             floatingButton.hide()
         }
+    }
+
+    protected fun showEmptyState(){
+        emptyState.visibility = View.VISIBLE
+    }
+
+    protected fun hideEmptyState(){
+        emptyState.visibility = View.GONE
     }
 
     override fun onPause() {

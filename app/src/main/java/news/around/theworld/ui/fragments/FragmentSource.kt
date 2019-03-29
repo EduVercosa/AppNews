@@ -13,11 +13,11 @@ import news.around.theworld.ui.adapters.SourcesRecyclerViewAdapter
 import news.around.theworld.ui.interfaces.SwitchFragment
 import news.around.theworld.ui.viewmodel.SourceViewModel
 import news.around.theworld.ui.viewmodel.viewstate.SourceViewState
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class FragmentSource : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
-    private val sourceViewModel: SourceViewModel by sharedViewModel()
+    private val sourceViewModel: SourceViewModel by viewModel()
 
     private val scrollListener: RecyclerViewScrollListener by lazy {
         RecyclerViewScrollListener(
@@ -60,6 +60,7 @@ class FragmentSource : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun updateScreen(viewState: SourceViewState) {
+        hideEmptyState()
         when (viewState) {
             is SourceViewState.Loading -> swipeToRefresh.isRefreshing = true
 
@@ -76,6 +77,7 @@ class FragmentSource : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
             is SourceViewState.Error -> {
                 swipeToRefresh.isRefreshing = false
                 Toast.makeText(context, viewState.message, Toast.LENGTH_SHORT).show()
+                showEmptyState()
             }
         }
     }

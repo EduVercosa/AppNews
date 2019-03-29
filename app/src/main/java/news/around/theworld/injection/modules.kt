@@ -9,7 +9,6 @@ import news.around.theworld.ui.viewmodel.SourceViewModel
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-
 fun newsModule() = module {
     viewModel { ArticleViewModel(repository = get(), schedulers = get()) }
     viewModel { SourceViewModel(repository = get(), schedulers = get()) }
