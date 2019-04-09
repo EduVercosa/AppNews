@@ -76,26 +76,6 @@ class SourceViewModelTest {
     }
 
     @Test
-    fun `when the getSources is called, and before return, cache must be empty`() {
-        val listSources: SourceList = Mockito.mock(SourceList::class.java)
-        Mockito.`when`(repository.getSources()).thenReturn(Single.just(listSources))
-
-        Assert.assertFalse(sourceViewModel.hasCache())
-
-        sourceViewModel.getSources()
-    }
-
-    @Test
-    fun `when the getSources is called, and return success, cache must be filled`() {
-        val listSources: SourceList = Mockito.mock(SourceList::class.java)
-        Mockito.`when`(repository.getSources()).thenReturn(Single.just(listSources))
-
-        sourceViewModel.getSources()
-
-        Assert.assertTrue(sourceViewModel.hasCache())
-    }
-
-    @Test
     fun `when the getSources is called, and got a error, then show error`() {
         Mockito.`when`(repository.getSources()).thenReturn(Single.error(RuntimeException("")))
 
@@ -110,12 +90,4 @@ class SourceViewModelTest {
         viewSateObserver.dispose()
     }
 
-    @Test
-    fun `when the getSources is called, and got a error, then cache must be empty`() {
-        Mockito.`when`(repository.getSources()).thenReturn(Single.error(RuntimeException("")))
-
-        sourceViewModel.getSources()
-
-        Assert.assertFalse(sourceViewModel.hasCache())
-    }
 }

@@ -1,6 +1,5 @@
 package news.around.theworld.ui.viewmodel
 
-import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import news.around.theworld.executors.SchedulerExecutors
@@ -20,7 +19,6 @@ class ArticleViewModel(
     fun articleViewState(): Observable<ArticleViewState> = articleViewRelay.hide()
 
     fun getArticles(sourceId: String, page: Int = 1, isLoadingMore: Boolean = false) {
-        Log.d("mytag","c "+articleViewRelay.count())
         this.nextPage = page
         articleViewRelay.onNext(ArticleViewState.Loading)
         addDisposable(

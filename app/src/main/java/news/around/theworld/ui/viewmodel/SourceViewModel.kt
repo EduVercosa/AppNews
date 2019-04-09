@@ -8,11 +8,9 @@ import news.around.theworld.repository.NewsRepository
 import news.around.theworld.ui.viewmodel.viewstate.SourceViewState
 
 class SourceViewModel(
-     private var repository: NewsRepository
-    ,private var schedulers: SchedulerExecutors
-): BaseViewModel() {
-
-    private lateinit var memoryCache: SourceViewState.MemoryCache
+        private var repository: NewsRepository
+        , private var schedulers: SchedulerExecutors
+) : BaseViewModel() {
 
     private val sourceViewRelay = BehaviorSubject.create<SourceViewState>()
 
@@ -22,32 +20,20 @@ class SourceViewModel(
         if (!sourceViewRelay.hasValue()) {
             sourceViewRelay.onNext(SourceViewState.Loading)
         }
-        if (hasCache()) {
-            sourceViewRelay.onNext(SourceViewState.Success(memoryCache.cache))
-        } else {
-            addDisposable(
+
+        addDisposable(
                 repository
-                    .getSources()
-                    .subscribeOn(schedulers.background())
-                    .observeOn(schedulers.mainThread())
-                    .subscribe({ success -> onSourcesSuccess(success) }
-                        , { error -> onSourceError(error) })
-            )
-        }
+                        .getSources()
+                        .subscribeOn(schedulers.background())
+                        .observeOn(schedulers.mainThread())
+                        .subscribe({ success -> onSourcesSuccess(success) }
+                                , { error -> onSourceError(error) })
+        )
+
     }
 
     private fun onSourcesSuccess(sourceList: SourceList) {
-        memoryCache = SourceViewState.MemoryCache(sourceList)
         sourceViewRelay.onNext(SourceViewState.Success(sourceList))
-    }
-
-    fun hasCache(): Boolean {
-        return try {
-             memoryCache.cache != null
-        } catch (e: UninitializedPropertyAccessException) {
-             false
-        }
-
     }
 
     private fun onSourceError(throwable: Throwable) {
